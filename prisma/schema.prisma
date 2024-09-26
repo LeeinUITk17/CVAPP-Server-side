@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(255)
+  email       String       @unique
+  age         Int?
+  password    String       @db.VarChar(255)
+  phone       String?      @db.VarChar(15)
+  address     String?      @db.VarChar(255)
+  linkedin    String?      @db.VarChar(255)
+  github      String?      @db.VarChar(255)
+  summary     String?      @db.Text
+  avatar      String?      @db.VarChar(255)
+  experiences Experience[]
+  educations  Education[]
+  skills      Skill[]
+  createdAt   DateTime     @default(now())
+  comments    Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String   @db.Text
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  company     String   @db.VarChar(255)
+  position    String   @db.VarChar(255)
+  startDate   DateTime
+  endDate     DateTime?
+  description String?  @db.Text
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId]) // Optional index for faster querying
+}
+
+model Education {
+  id        Int      @id @default(autoincrement())
+  school    String   @db.VarChar(255)
+  degree    String   @db.VarChar(255)
+  field     String   @db.VarChar(255)
+  startDate DateTime
+  endDate   DateTime?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId]) // Optional index for faster querying
+}
+
+model Skill {
+  id       Int      @id @default(autoincrement())
+  name     String   @db.VarChar(255)
+  level    String?  @db.VarChar(50)
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId]) // Optional index for faster querying
+}

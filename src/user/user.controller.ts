@@ -17,6 +17,7 @@ import { CommentDto } from './dto/comment-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateCvDto } from './dto/cv-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -39,9 +40,10 @@ export class UserController {
   async createComment(
     @Body() comment: CommentDto,
     @Param('id', ParseIntPipe) userId: number,
+    @Param('id', ParseIntPipe) cvId: number,
   ) {
     console.log(comment);
-    return await this.userService.createComment(comment, userId);
+    return await this.userService.createComment(comment, userId, cvId);
   }
   @Get('comments')
   async getUserComments() {
@@ -66,5 +68,35 @@ export class UserController {
     @Param('id', ParseIntPipe) userId: number,
   ) {
     return this.userService.updateProfile(updateUserDto, userId);
+  }
+  @Post(':userId/like/:cvId')
+  @UseGuards(AuthGuard('jwt'))
+  async likeCV(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('cvId', ParseIntPipe) cvId: number,
+  ) {
+    return this.userService.likeCV(userId, cvId);
+  }
+
+  @Delete(':userId/like/:cvId')
+  @UseGuards(AuthGuard('jwt'))
+  async removeLike(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('cvId', ParseIntPipe) cvId: number,
+  ) {
+    return this.userService.removeLike(userId, cvId);
+  }
+
+  @Post(':userId/cv')
+  @UseGuards(AuthGuard('jwt'))
+  async createCV(
+    @Body() createCvDto: CreateCvDto,
+    @Param('userId', ParseIntPipe) userId: number,
+  ) {
+    return this.userService.CreateCV(createCvDto, userId);
+  }
+  @Get(':cvId/comments')
+  async getCommentsOfCV(@Param('cvId', ParseIntPipe) cvId: number) {
+    return this.userService.getCommentsOfCV(cvId);
   }
 }

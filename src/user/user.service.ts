@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CommentDto } from './dto/comment-user.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateCvDto } from './dto/cv-user.dto';
 
 @Injectable()
 export class UserService {
@@ -28,19 +29,37 @@ export class UserService {
       skipDuplicates: true,
     });
   }
+  async CreateCV(createCV: CreateCvDto, userId: number) {
+    return this.prisma.cV.create({
+      data: {
+        title: createCV.title,
+        description: createCV.description,
+        user: {
+          connect: {
+            id: parseInt(userId.toString()),
+          },
+        },
+      },
+    });
+  }
   async getAllUsers() {
     return this.prisma.user.findMany();
   }
   async clearAllUsers() {
     return this.prisma.user.deleteMany();
   }
-  async createComment(comment: CommentDto, userId: number) {
+  async createComment(comment: CommentDto, userId: number, cvId: number) {
     const newComment = await this.prisma.comment.create({
       data: {
         text: comment.text,
         user: {
           connect: {
             id: parseInt(userId.toString()),
+          },
+        },
+        cv: {
+          connect: {
+            id: parseInt(cvId.toString()),
           },
         },
       },
@@ -84,6 +103,49 @@ export class UserService {
         linkedin: updateUserDto.linkedin,
         github: updateUserDto.github,
         summary: updateUserDto.summary,
+      },
+    });
+  }
+  async likeCV(userId: number, cvId: number) {
+    const newLike = await this.prisma.cVLike.create({
+      data: {
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        cv: {
+          connect: {
+            id: cvId,
+          },
+        },
+      },
+    });
+    return newLike;
+  }
+
+  async removeLike(userId: number, cvId: number) {
+    return this.prisma.cVLike.delete({
+      where: {
+        userId_cvId: {
+          userId,
+          cvId,
+        },
+      },
+    });
+  }
+  async getCommentsOfCV(cvId: number) {
+    return this.prisma.comment.findMany({
+      where: {
+        cvId: cvId,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          },
+        },
       },
     });
   }

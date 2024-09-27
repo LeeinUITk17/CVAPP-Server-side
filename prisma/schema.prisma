@@ -28,8 +28,24 @@ model User {
   experiences Experience[]
   educations  Education[]
   skills      Skill[]
+  cv          CV?          
   createdAt   DateTime     @default(now())
   comments    Comment[]
+  likes       CVLike[]     
+}
+
+model CV {
+  id          Int          @id @default(autoincrement())
+  title       String       @db.VarChar(255) 
+  description String?      @db.Text         
+  userId      Int          @unique
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments    Comment[]    
+  likes       CVLike[]    
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt      
+
+  @@index([userId]) 
 }
 
 model Comment {
@@ -37,8 +53,23 @@ model Comment {
   text      String   @db.Text
   createdAt DateTime @default(now())
   userId    Int
+  cvId      Int      
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cv        CV       @relation(fields: [cvId], references: [id], onDelete: Cascade)
+
+  @@index([cvId]) 
 }
+
+model CVLike {
+  id     Int    @id @default(autoincrement())
+  userId Int    
+  cvId   Int    
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cv     CV     @relation(fields: [cvId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cvId]) 
+}
+
 
 model Experience {
   id          Int      @id @default(autoincrement())
@@ -50,7 +81,7 @@ model Experience {
   userId      Int
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId]) // Optional index for faster querying
+  @@index([userId]) 
 }
 
 model Education {
@@ -63,7 +94,7 @@ model Education {
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId]) // Optional index for faster querying
+  @@index([userId]) 
 }
 
 model Skill {
@@ -73,5 +104,5 @@ model Skill {
   userId   Int
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId]) // Optional index for faster querying
+  @@index([userId]) 
 }

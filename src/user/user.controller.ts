@@ -27,9 +27,13 @@ export class UserController {
   async bulkCreateUsers(@Body() createUserDtos: CreateUserDto[]) {
     return this.userService.bulkCreate(createUserDtos);
   }
+  // @Get('all')
+  // async getAll() {
+  //   return this.userService.getAllUsers();
+  // }
   @Get('all')
   async getAll() {
-    return this.userService.getAllUsers();
+    return this.userService.getAllCVs();
   }
   @Delete('all')
   async clearAllUsers() {

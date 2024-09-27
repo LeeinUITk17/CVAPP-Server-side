@@ -45,6 +45,25 @@ export class UserService {
   async getAllUsers() {
     return this.prisma.user.findMany();
   }
+  async getAllCVs() {
+    return this.prisma.cV.findMany({
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+            avatar: true,
+            age: true,
+            phone: true,
+            address: true,
+            linkedin: true,
+            github: true,
+            summary: true,
+          },
+        },
+      },
+    });
+  }
   async clearAllUsers() {
     return this.prisma.user.deleteMany();
   }

@@ -96,10 +96,22 @@ export class UserService {
     userId: number,
   ): Promise<any> {
     try {
-      // Upload file lên Cloudinary và lấy URL
+      // Fetch the user's current avatar URL
+      const user = await this.prisma.user.findUnique({
+        where: { id: parseInt(userId.toString()) },
+        select: { avatar: true },
+      });
+
+      //  delete it from Cloudinary
+      if (user && user.avatar) {
+        const publicId = this.extractPublicIdFromUrl(user.avatar);
+        await this.cloudinaryService.deleteFile(publicId);
+      }
+
+      // Upload the new file to Cloudinary and get the URL
       const uploadResult = await this.cloudinaryService.uploadFile(file);
 
-      // Cập nhật URL vào avatar
+      // Update avatar URL
       await this.prisma.user.update({
         where: { id: parseInt(userId.toString()) },
         data: { avatar: uploadResult.secure_url },
@@ -109,6 +121,13 @@ export class UserService {
     } catch (error) {
       throw new Error(`Failed to upload avatar: ${error.message}`);
     }
+  }
+
+  private extractPublicIdFromUrl(url: string): string {
+    const parts = url.split('/');
+    const fileName = parts[parts.length - 1];
+    const publicId = fileName.split('.')[0];
+    return publicId;
   }
   async updateProfile(updateUserDto: UpdateUserDto, userId: number) {
     return this.prisma.user.update({

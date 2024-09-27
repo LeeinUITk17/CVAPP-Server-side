@@ -4,7 +4,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CommentDto } from './dto/comment-user.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateCvDto } from './dto/cv-user.dto';
 
 @Injectable()
 export class UserService {
@@ -29,19 +28,17 @@ export class UserService {
       skipDuplicates: true,
     });
   }
-  async CreateCV(createCV: CreateCvDto, userId: number) {
-    return this.prisma.cV.create({
-      data: {
-        title: createCV.title,
-        description: createCV.description,
-        user: {
-          connect: {
-            id: parseInt(userId.toString()),
-          },
-        },
-      },
-    });
-  }
+  // async CreateCV(createCV: CreateCvDto, userId: number) {
+  //   return this.prisma.cV.create({
+  //     data: {
+  //       user: {
+  //         connect: {
+  //           id: parseInt(userId.toString()),
+  //         },
+  //       },
+  //     },
+  //   });
+  // }
   async getAllUsers() {
     return this.prisma.user.findMany();
   }

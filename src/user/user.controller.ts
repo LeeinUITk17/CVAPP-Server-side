@@ -17,7 +17,7 @@ import { CommentDto } from './dto/comment-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateCvDto } from './dto/cv-user.dto';
+// import { CreateCvDto } from './dto/cv-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -91,14 +91,15 @@ export class UserController {
     return this.userService.removeLike(userId, cvId);
   }
 
-  @Post(':userId/cv')
-  @UseGuards(AuthGuard('jwt'))
-  async createCV(
-    @Body() createCvDto: CreateCvDto,
-    @Param('userId', ParseIntPipe) userId: number,
-  ) {
-    return this.userService.CreateCV(createCvDto, userId);
-  }
+  // @Post(':userId/cv')
+  // @UseGuards(AuthGuard('jwt'))
+  // async createCV(
+  //   @Body() createCvDto: CreateCvDto,
+  //   @Param('userId', ParseIntPipe) userId: number,
+  // ) {
+  //   console.log(createCvDto);
+  //   return this.userService.CreateCV(createCvDto, userId);
+  // }
   @Get(':cvId/comments')
   async getCommentsOfCV(@Param('cvId', ParseIntPipe) cvId: number) {
     return this.userService.getCommentsOfCV(cvId);

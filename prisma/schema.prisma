@@ -36,8 +36,6 @@ model User {
 
 model CV {
   id          Int          @id @default(autoincrement())
-  title       String       @db.VarChar(255) 
-  description String?      @db.Text         
   userId      Int          @unique
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments    Comment[]    

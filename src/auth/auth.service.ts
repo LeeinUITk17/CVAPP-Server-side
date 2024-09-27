@@ -29,6 +29,15 @@ export class AuthService {
         password: hashedPassword,
       },
     });
+    await this.prisma.cV.create({
+      data: {
+              user: {
+                connect: {
+                  id: parseInt(user.id.toString()),
+                },
+              },
+            },
+    })
     return this.generateJwt(user);
   }
 

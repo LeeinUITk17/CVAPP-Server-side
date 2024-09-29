@@ -39,14 +39,15 @@ export class UserController {
   async clearAllUsers() {
     return await this.userService.clearAllUsers();
   }
-  @Post(':id/comment')
+  @Post(':id/comment/:cvId')
   @UseGuards(AuthGuard('jwt'))
   async createComment(
     @Body() comment: CommentDto,
     @Param('id', ParseIntPipe) userId: number,
-    @Param('id', ParseIntPipe) cvId: number,
+    @Param('cvId', ParseIntPipe) cvId: number,
   ) {
     console.log(comment);
+    console.log('liking cv', userId, cvId);
     return await this.userService.createComment(comment, userId, cvId);
   }
   @Get('comments')
@@ -73,21 +74,23 @@ export class UserController {
   ) {
     return this.userService.updateProfile(updateUserDto, userId);
   }
-  @Post(':userId/like/:cvId')
+  @Post(':id/like/:cvId')
   @UseGuards(AuthGuard('jwt'))
   async likeCV(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('id', ParseIntPipe) userId: number,
     @Param('cvId', ParseIntPipe) cvId: number,
   ) {
+    console.log('liking cv', userId, cvId);
     return this.userService.likeCV(userId, cvId);
   }
 
-  @Delete(':userId/like/:cvId')
+  @Delete(':id/like/:cvId')
   @UseGuards(AuthGuard('jwt'))
   async removeLike(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('id', ParseIntPipe) userId: number,
     @Param('cvId', ParseIntPipe) cvId: number,
   ) {
+    console.log('removing like', userId, cvId);
     return this.userService.removeLike(userId, cvId);
   }
 

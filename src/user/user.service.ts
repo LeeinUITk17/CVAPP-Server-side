@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CommentDto } from './dto/comment-user.dto';
@@ -58,6 +58,17 @@ export class UserService {
             summary: true,
           },
         },
+        likes: true,
+        comments: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -65,6 +76,16 @@ export class UserService {
     return this.prisma.user.deleteMany();
   }
   async createComment(comment: CommentDto, userId: number, cvId: number) {
+    // Check if the CV exists
+    const cvExists = await this.prisma.cV.findUnique({
+      where: { id: parseInt(cvId.toString()) },
+    });
+
+    if (!cvExists) {
+      throw new NotFoundException(`CV with id ${cvId} not found`);
+    }
+
+    // Create the new comment
     const newComment = await this.prisma.comment.create({
       data: {
         text: comment.text,
@@ -80,6 +101,7 @@ export class UserService {
         },
       },
     });
+
     return newComment;
   }
   async getUserComments() {
@@ -146,12 +168,12 @@ export class UserService {
       data: {
         user: {
           connect: {
-            id: userId,
+            id: parseInt(userId.toString()),
           },
         },
         cv: {
           connect: {
-            id: cvId,
+            id: parseInt(cvId.toString()),
           },
         },
       },
@@ -172,7 +194,7 @@ export class UserService {
   async getCommentsOfCV(cvId: number) {
     return this.prisma.comment.findMany({
       where: {
-        cvId: cvId,
+        cvId: parseInt(cvId.toString()),
       },
       include: {
         user: {

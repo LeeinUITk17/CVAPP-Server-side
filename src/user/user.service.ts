@@ -164,6 +164,17 @@ export class UserService {
     });
   }
   async likeCV(userId: number, cvId: number) {
+    const existingLike = await this.prisma.cVLike.findUnique({
+      where: {
+        userId_cvId: {
+          userId,
+          cvId,
+        },
+      },
+    });
+    if (existingLike) {
+      throw new Error(`User ${userId} has already liked CV ${cvId}`);
+    }
     const newLike = await this.prisma.cVLike.create({
       data: {
         user: {

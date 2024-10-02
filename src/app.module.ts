@@ -10,6 +10,9 @@ import { SkillsModule } from './skills/skills.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ChatModule } from './chat/chat.module';
+import { RoomModule } from './room/room.module';
+import { RoomUserModule } from './room-user/room-user.module';
 @Module({
   imports: [
     UserModule,
@@ -20,6 +23,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     AuthModule,
     CloudinaryModule,
+    ChatModule,
+    RoomModule,
+    RoomUserModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
